@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pasteleria</title>
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<link rel="stylesheet" href="../app.css">
+</head>
+<body>
+	<div id="app">
+		<div>
+			<button class="nav-btn" @click="btnIndex()">Pasteles</button>
+			<button class="nav-btn" @click="btnIngred()">Ingredientes</button>
+		</div>
+		<div class="page">
+			<h2 align="center">INGREDIENTES</h2>
+			<button @click="modalCreate=true">Nuevo</button>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th>Ingrediente</th>
+						<th>Descripción</th>
+						<th>Fecha ingreso</th>
+						<th>Fecha de vencimiento</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="ing in ingredientes" :key="ing.id_ingrediete">
+						<td></td>
+						<td>{{ing.nombre}}</td>
+						<td>{{ing.descripcion}}</td>
+						<td>{{ing.fecha_ingreso}}</td>
+						<td>{{ing.fecha_vencimiento}}</td>
+						<td>
+							<button @click="modalUpdate=true; selectIngrediente(ing)">Editar</button>
+							<button @click="modalDelete=true; selectIngrediente(ing)">Eliminar</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<!--Se crea un modal para crear un nuevo registro. -->
+		<div class="contenedor" v-if="modalCreate">
+			<div class="modal">
+				<h2 align="center">CREAR REGISTRO</h2>
+				<p>Ingrediente</p>
+				<input type="text" name="nombre" id="nombre" placeholder="Ingrediente">
+				<p>Descripción</p>
+				<input type="text" name="descripcion" id="descripcion" placeholder="Descripción">
+				<p>Fecha de ingreso</p>
+				<input type="date" name="date_ingreso" id="date_ingreso" placeholder="Fecha de ingreso">
+				<p>Fecha de vencimiento</p>
+				<input type="date" name="date_vencimiento" id="date_vencimiento" placeholder="Fecha de vencimiento">
+				<button @click="modalCreate=false;insertIngrediente()">Guardar</button>
+				<button @click="modalCreate=false">Cancelar</button>
+			</div>
+		</div>
+
+		<!-- MODIFICAR -->
+		<div class="contenedor" v-if="modalUpdate">
+			<div class="modal">
+				<h2 align="center">MODIFICAR REGISTRO</h2>
+				<p>Ingrediente</p>
+				<input type="text" name="nombre" id="nombre" v-model="currentIngrediente.nombre">
+				<p>Descripción</p>
+				<input type="text" name="descripcion" id="descripcion" v-model="currentIngrediente.descripcion">
+				<p>Fecha de ingreso</p>
+				<input type="date" name="date_ingreso" id="date_ingreso" v-model="currentIngrediente.fecha_ingreso">
+				<p>Fecha de vencimiento</p>
+				<input type="date" name="date_vencimiento" id="date_vencimiento" v-model="currentIngrediente.fecha_vencimiento">
+				<button @click="modalUpdate=false; updateIngrediente()">Guardar</button>
+				<button @click="modalUpdate=false">Cancelar</button>
+				
+			</div>
+		</div>
+		<!-- Eliminar -->
+		<div class="contenedor" v-if="modalDelete">
+			<div class="modal">
+				<h2 align="center">ELIMINAR REGISTRO</h2>
+				<h4>¿Desea eliminar el registro?</h4>
+				<button @click="modalDelete=false; delIngrediente()">Eliminar</button>
+				<button @click="modalDelete=false">Cancelar</button>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script src="../vue/ingredientes.js"></script>
+</body>
+</html>

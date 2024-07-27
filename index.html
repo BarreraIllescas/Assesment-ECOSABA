@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pasteleria</title>
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<link rel="stylesheet" href="app.css">
+</head>
+<body>
+	<div id="app">
+
+		<div class="page">
+			<h2 align="center">PASTELES</h2>
+			<button @click="modalCreate=true">Nuevo</button>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th>Pastel</th>
+						<th>Descripción</th>
+						<th>Preparado por</th>
+						<th>Fecha de creación</th>
+						<th>Fecha de vencimiento</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="pst in pasteles" :key="pst.id_pastel">
+						<td></td>
+						<td>{{pst.nombre}}</td>
+						<td>{{pst.descripcion}}</td>
+						<td>{{pst.preparado_por}}</td>
+						<td>{{pst.fecha_creacion}}</td>
+						<td>{{pst.fecha_vencimiento}}</td>
+						<td>
+							<button @click="modalUpdate=true; selectPastel(pst)">Editar</button>
+							<button @click="modalDelete=true; selectPastel(pst)">Eliminar</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<!--Se crea un modal para crear un nuevo registro. -->
+		<div class="contenedor" v-if="modalCreate">
+			<div class="modal">
+				<h2 align="center">CREAR REGISTRO</h2>
+				<input type="text" name="nombre" id="nombre" placeholder="Pastel">
+				<input type="text" name="descripcion" id="descripcion" placeholder="Descripción">
+				<input type="number" name="repostero" id="repostero" placeholder="Preparado por">
+				<input type="date" name="date_creacion" id="date_creacion" placeholder="Fecha de creación">
+				<input type="date" name="date_vencimiento" id="date_vencimiento" placeholder="Fecha de vencimiento">
+				<button @click="modalCreate=false;insertPastel()">Guardar</button>
+				<button @click="modalCreate=false">Cancelar</button>
+			</div>
+		</div>
+
+		<!-- MODIFICAR -->
+		<div class="contenedor" v-if="modalUpdate">
+			<div class="modal">
+				<h2 align="center">MODIFICAR REGISTRO</h2>
+				<input type="text" name="nombre" id="nombre" v-model="currentPastel.nombre">
+				<input type="text" name="descripcion" id="descripcion" v-model="currentPastel.descripcion">
+				<input type="number" name="repostero" id="repostero" v-model="currentPastel.preparado_por">
+				<input type="date" name="date_creacion" id="date_creacion" v-model="currentPastel.fecha_creacion">
+				<input type="date" name="date_vencimiento" id="date_vencimiento" v-model="currentPastel.fecha_vencimiento">
+				<button @click="modalUpdate=false; updatePastel()">Guardar</button>
+				<button @click="modalUpdate=false">Cancelar</button>
+				
+			</div>
+		</div>
+		<!-- Eliminar -->
+		<div class="contenedor" v-if="modalDelete">
+			<div class="modal">
+				<h2 align="center">ELIMINAR REGISTRO</h2>
+				<h4>¿Desea eliminar el registro?</h4>
+				<button @click="modalDelete=false; delPastel()">Eliminar</button>
+				<button @click="modalDelete=false">Cancelar</button>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>

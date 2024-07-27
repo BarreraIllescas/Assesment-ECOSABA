@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pasteleria</title>
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<link rel="stylesheet" href="../app.css">
+</head>
+<body>
+	
+	<div id="app">
+		<div class="nav">
+			<button class="nav-btn" @click="btnIndex()">Pasteles</button>
+			<button class="nav-btn" @click="btnIngred()">Ingredientes</button>
+		</div>
+		<div class="page">
+			<h2 align="center">PASTELES</h2>
+			<button @click="modalCreate=true">Nuevo</button>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th>Pastel</th>
+						<th>Descripción</th>
+						<th>Preparado por</th>
+						<th>Fecha de creación</th>
+						<th>Fecha de vencimiento</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="pst in pasteles" :key="pst.id_pastel">
+						<td></td>
+						<td>{{pst.nombre}}</td>
+						<td>{{pst.descripcion}}</td>
+						<td>{{pst.preparado_por}}</td>
+						<td>{{pst.fecha_creacion}}</td>
+						<td>{{pst.fecha_vencimiento}}</td>
+						<td>
+							<button @click="modalUpdate=true; selectPastel(pst); getIngredientes(); getReporte()">Editar</button>
+							<button @click="modalDelete=true; selectPastel(pst)">Eliminar</button>
+							<button @click="modalReporte=true; selectPastel(pst); getReporte()">Reporte</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<!--Se crea un modal para crear un nuevo registro. -->
+		<div class="contenedor" v-if="modalCreate">
+			<div class="modal">
+				<h2 align="center">CREAR REGISTRO</h2>
+				<p>Pastel</p>
+				<input type="text" name="nombre" id="nombre" placeholder="Pastel">
+				<p>Descripción</p>
+				<input type="text" name="descripcion" id="descripcion" placeholder="Descripción">
+				<p>Preparado por</p>
+				<input type="number" name="repostero" id="repostero" placeholder="Preparado por">
+				<p>Fecha de creación</p>
+				<input type="date" name="date_creacion" id="date_creacion" placeholder="Fecha de creación">
+				<p>Fecha de vencimiento</p>
+				<input type="date" name="date_vencimiento" id="date_vencimiento" placeholder="Fecha de vencimiento">
+				<div>
+					<button @click="modalCreate=false;insertPastel()">Guardar</button>
+					<button @click="modalCreate=false">Cancelar</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- MODIFICAR -->
+		<div class="contenedor" v-if="modalUpdate" style="overflow-y: scroll;">
+			<div class="modal" style="width: auto; ">
+				<h2 align="center">MODIFICAR REGISTRO</h2>
+				<p>Pastel</p>
+				<input type="text" name="nombre" id="nombre" v-model="currentPastel.nombre">
+				<p>Descripción</p>
+				<input type="text" name="descripcion" id="descripcion" v-model="currentPastel.descripcion">
+				<p>Preparado por</p>
+				<input type="number" name="repostero" id="repostero" v-model="currentPastel.preparado_por">
+				<p>Fecha de creación</p>
+				<input type="date" name="date_creacion" id="date_creacion" v-model="currentPastel.fecha_creacion">
+				<p>Fecha de vencimiento</p>
+				<input type="date" name="date_vencimiento" id="date_vencimiento" v-model="currentPastel.fecha_vencimiento">
+				<div>
+					<button @click="modalUpdate=false; updatePastel()">Guardar</button>
+					<button @click="modalUpdate=false">Cancelar</button>
+				</div>
+				<br><br>
+				<div class="">
+					<h3 align="center">Ingredientes</h3>
+					<select v-model="selectedIngrediente">
+						<option v-for="ing in ingredientes" :key="ing.id_ingrediete" :value="ing.id_ingrediete">
+							{{ ing.nombre }}
+						</option>
+					</select>
+					<button @click="saveIng()">Añadir</button>
+				</div>
+				<table>
+					<thead>
+						<tr>
+							<th>Ingrediente</th>
+							<th>Descripción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="ip in ingrediente_pastel" :key="ip.id_pastel">
+							<td>{{ip.ingrediente}}</td>
+							<td>{{ip.descripcion}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- Eliminar -->
+		<div class="contenedor" v-if="modalDelete">
+			<div class="modal">
+				<h2 align="center">ELIMINAR REGISTRO</h2>
+				<h4>¿Desea eliminar el registro?</h4>
+				<div>
+					<button @click="modalDelete=false; delPastel()">Eliminar</button>
+					<button @click="modalDelete=false">Cancelar</button>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Reporte -->
+		<div class="contenedor" v-if="modalReporte">
+			<div class="modal">
+				<h2 v-if="ingrediente_pastel.length > 0">Pastel - {{ingrediente_pastel[0].pastel}}</h2>
+				<table>
+					<thead>
+						<tr>
+							<th></th>
+							<th>Ingrediente</th>
+							<th>Descripción</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="ip in ingrediente_pastel" :key="ip.id_pastel">
+							<td></td>
+							<td>{{ip.ingrediente}}</td>
+							<td>{{ip.descripcion}}</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<button @click="modalReporte=false; btnCerrar()">Cerrar</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="../vue/app.js"></script>
+
+</body>
+</html>
